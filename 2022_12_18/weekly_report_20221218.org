@@ -1,0 +1,26 @@
+#+HTML_HEAD: <link rel="stylesheet" href="https://latex.now.sh/style.css"> 
+* Feedback
+- 
+- Make the validation learning curves (loss and accuracy) smoother.
+  1. Try the smoothing with default values used by tensorflow.
+  2. Decrease the initial learning rate for adam optimizer.
+  3. Create a datasplit to have more sessions in Testing and Validation. The
+     recommendation is 50 for training, 30 for validation and 20 for testing.
+* Action items
+- *Plot SOTA learning curves*
+- *Smooth learning curves*
+- *Decrease initial learning rate of 10FPS model*
+- *Reshuffle data to have more sessions in testing and validation*
+- *hand with pen / hand wihtout pen classifier* [1/1]
+  - [X] Keras: How to load dataset from directories?
+
+* Hand with pen / Hand without pen classifier
+** Links
+- [[https://keras.io/api/data_loading/][Keras: Loading dataset from directories]]
+- [[https://keras.io/guides/transfer_learning/][Keras: Transfer learning & fine-tuning tutorial]].
+- [[https://keras.io/api/applications/][Keras: List of deep learning models with weights.]]
+** Dataset
+- Data set is prepared from =writing / nowriting= ground truth.
+- 
+
+1

@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-12-04 Sun 10:20 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
+</head>
+<body>
+<div id="content" class="content">
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org8fa18fc">1. Previous week feedback</a>
+<ul>
+<li><a href="#orgd4a559a">1.1. <span class="done DONE">DONE</span> Data augmentation</a></li>
+<li><a href="#orge397195">1.2. <span class="done DONE">DONE</span> Classifer at different temporal sampling rate</a></li>
+<li><a href="#orge77f1dc">1.3. <span class="todo ACTIVE">ACTIVE</span> Hand with pen Vs Hand without pen</a></li>
+</ul>
+</li>
+<li><a href="#org8bc9b75">2. Data augmentation</a>
+<ul>
+<li><a href="#org2174490">2.1. Augmentation parameters</a></li>
+<li><a href="#orge73509a">2.2. Dataset</a></li>
+<li><a href="#org9fb27f3">2.3. Results</a></li>
+<li><a href="#org505863b">2.4. Learning curves</a>
+<ul>
+<li><a href="#org1fd0016">2.4.1. Loss</a></li>
+<li><a href="#orgb32398e">2.4.2. Accuracy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgf434689">3. Classifers at different temporal sampling rate</a>
+<ul>
+<li><a href="#org211abd7">3.1. Dataset</a></li>
+<li><a href="#orgb094c6a">3.2. Design</a></li>
+<li><a href="#org3539a9c">3.3. Results</a></li>
+<li><a href="#org9372247">3.4. Learning curves</a>
+<ul>
+<li><a href="#orgd075dc8">3.4.1. Loss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org015a270">4. <code>hand-with-pen</code> Vs <code>hand-without-pen</code></a>
+<ul>
+<li><a href="#orgb51908d">4.1. Data preparation</a>
+<ul>
+<li><a href="#org131cb0f">4.1.1. Extracting images from video samples</a></li>
+<li><a href="#orgd287c57">4.1.2. Cleaning data</a></li>
+<li><a href="#org043b3af">4.1.3. Splitting data into training, validation and testing</a></li>
+</ul>
+</li>
+<li><a href="#orga10433b">4.2. Training configuration</a></li>
+<li><a href="#org87ba400">4.3. Current status</a></li>
+</ul>
+</li>
+<li><a href="#org72e1bf3">5. Discussion / Feedback</a>
+<ul>
+<li><a href="#orgde3d88e">5.1. Discussion</a></li>
+<li><a href="#org82157ba">5.2. Feedback</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8fa18fc" class="outline-2">
+<h2 id="org8fa18fc"><span class="section-number-2">1.</span> Previous week feedback</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orgd4a559a" class="outline-3">
+<h3 id="orgd4a559a"><span class="section-number-3">1.1.</span> <span class="done DONE">DONE</span> Data augmentation</h3>
+</div>
+<div id="outline-container-orge397195" class="outline-3">
+<h3 id="orge397195"><span class="section-number-3">1.2.</span> <span class="done DONE">DONE</span> Classifer at different temporal sampling rate</h3>
+</div>
+<div id="outline-container-orge77f1dc" class="outline-3">
+<h3 id="orge77f1dc"><span class="section-number-3">1.3.</span> <span class="todo ACTIVE">ACTIVE</span> Hand with pen Vs Hand without pen</h3>
+</div>
+</div>
+<div id="outline-container-org8bc9b75" class="outline-2">
+<h2 id="org8bc9b75"><span class="section-number-2">2.</span> Data augmentation</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org2174490" class="outline-3">
+<h3 id="org2174490"><span class="section-number-3">2.1.</span> Augmentation parameters</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>The augmentation parameters are <b>recaled</b> from Sravani thesis.</li>
+<li>With 0.5 probability data is augmented with
+<ol class="org-ol">
+<li>Rotation, {-7,&#x2026;,+7}</li>
+<li>Width Translation {-5,&#x2026;+5}</li>
+<li>Flip with a probability of 0.5</li>
+<li>Rescaling the frame between [0.8 to 1.2]</li>
+<li>Shearing with x axis witht a factor of [-0.05, 0.05] &lt;&#x2014; I eyed this not from sravani thesis</li>
+</ol></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge73509a" class="outline-3">
+<h3 id="orge73509a"><span class="section-number-3">2.2.</span> Dataset</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>Writing/nowriting classification</li>
+<li>Each sample is,
+<ul class="org-ul">
+<li>90 frames</li>
+<li>The longer edge scaled to 224 while mainitaining aspect ratio.</li>
+</ul></li>
+<li><p>
+Dataset
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left"># Samples (writing, nowriting)</th>
+<th scope="col" class="org-right"># Sessions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Training</td>
+<td class="org-left">(309, 579)</td>
+<td class="org-right">28</td>
+</tr>
+
+<tr>
+<td class="org-left">Validation</td>
+<td class="org-left">(124, 88)</td>
+<td class="org-right">2</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org9fb27f3" class="outline-3">
+<h3 id="org9fb27f3"><span class="section-number-3">2.3.</span> Results</h3>
+<div class="outline-text-3" id="text-2-3">
+<ul class="org-ul">
+<li><p>
+<b>NOTE:</b> I have yet to see how the augmented model performs on the test.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-right">Best epoch</th>
+<th scope="col" class="org-right">Trn Loss</th>
+<th scope="col" class="org-right">Val Loss</th>
+<th scope="col" class="org-right">Trn Acc</th>
+<th scope="col" class="org-right">Val Acc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">No aug</td>
+<td class="org-right">22</td>
+<td class="org-right">0.29</td>
+<td class="org-right">0.66</td>
+<td class="org-right">88</td>
+<td class="org-right">69</td>
+</tr>
+
+<tr>
+<td class="org-left">With aug</td>
+<td class="org-right">52</td>
+<td class="org-right">0.28</td>
+<td class="org-right">0.67</td>
+<td class="org-right">87</td>
+<td class="org-right">69</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org505863b" class="outline-3">
+<h3 id="org505863b"><span class="section-number-3">2.4.</span> Learning curves</h3>
+<div class="outline-text-3" id="text-2-4">
+</div>
+<div id="outline-container-org1fd0016" class="outline-4">
+<h4 id="org1fd0016"><span class="section-number-4">2.4.1.</span> Loss</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<ul class="org-ul">
+<li><a href="./plotly_graphs/Nov10_run5_no_aug_accuracy.html">Click here</a> to see loss curve without augmentation.</li>
+<li><a href="./plotly_graphs/Dec01_run3_aug_loss.html">Click here</a>to see loss curve with augmentation.</li>
+</ul>
+
+<div id="orge86076d" class="figure">
+<p><img src="./images/2022_12_04-aug_vs_noaug_loss.drawio.svg" alt="2022_12_04-aug_vs_noaug_loss.drawio.svg" class="org-svg" />
+</p>
+<p><span class="figure-number">Figure 1: </span>Loss curve for with and without augmentation</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb32398e" class="outline-4">
+<h4 id="orgb32398e"><span class="section-number-4">2.4.2.</span> Accuracy</h4>
+<div class="outline-text-4" id="text-2-4-2">
+<ul class="org-ul">
+<li><a href="./plotly_graphs/Nov10_run5_no_aug_accuracy.html">Click here</a> to see accuracy curve without augmentation.</li>
+<li><a href="./plotly_graphs/Dec01_run3_aug_loss.html">Click here</a>to see accuracy curve with augmentation.</li>
+</ul>
+
+<div id="org838e99d" class="figure">
+<p><img src="./images/2022_12_04-aug_vs_noaug_loss.drawio.svg" alt="2022_12_04-aug_vs_noaug_loss.drawio.svg" class="org-svg" />
+</p>
+<p><span class="figure-number">Figure 2: </span>Accuracy curve for with and without augmentation</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-orgf434689" class="outline-2">
+<h2 id="orgf434689"><span class="section-number-2">3.</span> Classifers at different temporal sampling rate</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org211abd7" class="outline-3">
+<h3 id="org211abd7"><span class="section-number-3">3.1.</span> Dataset</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>Writing/nowriting classification</li>
+<li>Each sample is,
+<ul class="org-ul">
+<li>A sample can have 30, 60 or 90 frames based on the sampling.</li>
+<li>The longer edge scaled to 224 while mainitaining aspect ratio.</li>
+</ul></li>
+<li><p>
+Dataset
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-left"># Samples (writing, nowriting)</th>
+<th scope="col" class="org-right"># Sessions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Training</td>
+<td class="org-left">(309, 579)</td>
+<td class="org-right">28</td>
+</tr>
+
+<tr>
+<td class="org-left">Validation</td>
+<td class="org-left">(124, 88)</td>
+<td class="org-right">2</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb094c6a" class="outline-3">
+<h3 id="orgb094c6a"><span class="section-number-3">3.2.</span> Design</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+The first layer max pooling is adjusted as per FPS. The rest of the
+architecture will remain the same.
+</p>
+
+
+<div id="org9e0158a" class="figure">
+<p><img src="file:///home/vj/Dropbox/org-roam/research/images/20221130090739-multi_fps_3dcnns.drawio.svg" alt="20221130090739-multi_fps_3dcnns.drawio.svg" class="org-svg" />
+</p>
+<p><span class="figure-number">Figure 3: </span>Adjusting the first layer MaxPooling</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org3539a9c" class="outline-3">
+<h3 id="org3539a9c"><span class="section-number-3">3.3.</span> Results</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li><p>
+<b>NOTE:</b> I have yet to see how the augmented model performs on the test.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Temporal sampling</th>
+<th scope="col" class="org-right">Best epoch</th>
+<th scope="col" class="org-right">Trn Loss</th>
+<th scope="col" class="org-right">Val Loss</th>
+<th scope="col" class="org-right">Trn Acc</th>
+<th scope="col" class="org-right">Val Acc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">30 frames per sec</td>
+<td class="org-right">52</td>
+<td class="org-right">0.28</td>
+<td class="org-right">0.67</td>
+<td class="org-right">87</td>
+<td class="org-right">69</td>
+</tr>
+
+<tr>
+<td class="org-right">20</td>
+<td class="org-right">54</td>
+<td class="org-right">0.27</td>
+<td class="org-right">0.62</td>
+<td class="org-right">89</td>
+<td class="org-right">73</td>
+</tr>
+
+<tr>
+<td class="org-right">10</td>
+<td class="org-right">59</td>
+<td class="org-right">0.27</td>
+<td class="org-right">0.57</td>
+<td class="org-right">88</td>
+<td class="org-right">77</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org9372247" class="outline-3">
+<h3 id="org9372247"><span class="section-number-3">3.4.</span> Learning curves</h3>
+<div class="outline-text-3" id="text-3-4">
+</div>
+<div id="outline-container-orgd075dc8" class="outline-4">
+<h4 id="orgd075dc8"><span class="section-number-4">3.4.1.</span> Loss</h4>
+<div class="outline-text-4" id="text-3-4-1">
+<ul class="org-ul">
+<li><a href="./plotly_graphs/Dec01_run3_aug_loss.html">30 frames sampled per second</a></li>
+<li><a href="./plotly_graphs/Dec01_run2_aug_loss_20fps.html">20 frames sampled per second</a></li>
+<li><a href="./plotly_graphs/Dec01_run3_aug_accuracy_10fps.html">10 frames sampled per second</a></li>
+</ul>
+
+
+<div id="orgd092962" class="figure">
+<p><img src="./images/2022_12_04-temporal_sampling_loss.drawio.svg" alt="2022_12_04-temporal_sampling_loss.drawio.svg" class="org-svg" />
+</p>
+<p><span class="figure-number">Figure 4: </span>Loss curve at different temporal sampling</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org015a270" class="outline-2">
+<h2 id="org015a270"><span class="section-number-2">4.</span> <code>hand-with-pen</code> Vs <code>hand-without-pen</code></h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-orgb51908d" class="outline-3">
+<h3 id="orgb51908d"><span class="section-number-3">4.1.</span> Data preparation</h3>
+<div class="outline-text-3" id="text-4-1">
+</div>
+<div id="outline-container-org131cb0f" class="outline-4">
+<h4 id="org131cb0f"><span class="section-number-4">4.1.1.</span> Extracting images from video samples</h4>
+<div class="outline-text-4" id="text-4-1-1">
+<p>
+I first extract images from video samples by running the following
+script
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"># From HAQ/hands-with-without-pen-classifier
+python extract_frames.py \
+  /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images/writing_30fps \
+  /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images/nowriting_30fps \
+  /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd287c57" class="outline-4">
+<h4 id="orgd287c57"><span class="section-number-4">4.1.2.</span> Cleaning data</h4>
+<div class="outline-text-4" id="text-4-1-2">
+<p>
+After extracting the frames as images we might have some improper instances,
+</p>
+<ul class="org-ul">
+<li>Image from writing
+<ul class="org-ul">
+<li>Without hands</li>
+<li>Without pen</li>
+</ul></li>
+<li>Images from nowriting
+<ul class="org-ul">
+<li>Without hands</li>
+<li>With hands and pen</li>
+</ul></li>
+</ul>
+<p>
+This requires manual cleaning* by going through each image.
+</p>
+
+<div id="org80f2a2f" class="figure">
+<p><img src="file:///home/vj/Dropbox/org-roam/research/images/20221202095659-hands_with_without_pen_classifier-not_correct_instances.drawio.svg" alt="20221202095659-hands_with_without_pen_classifier-not_correct_instances.drawio.svg" class="org-svg" />
+</p>
+<p><span class="figure-number">Figure 5: </span>Images extracted from writing and nowriting video samples that will mislead classifier.</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org043b3af" class="outline-4">
+<h4 id="org043b3af"><span class="section-number-4">4.1.3.</span> Splitting data into training, validation and testing</h4>
+<div class="outline-text-4" id="text-4-1-3">
+<p>
+To split the data into training, validation and testing we first
+need the following files and directories,
+</p>
+<ul class="org-ul">
+<li>Directory having images of hands-with-pen and hands-withot-pen.</li>
+<li><p>
+A csv file having session name and corresponding data split.
+Here we are assuming that the image files have information about session.
+For example, <code>tv_224_793_G-C3L1W-Mar19-D-Phuong_q2_03-04_30fps_Kid77_4381_4471_44.0.png</code> has
+session information coded into, <i>C3L1W-Mar10-D</i>.
+</p>
+
+
+<div id="orga324153" class="figure">
+<p><img src="file:///home/vj/Dropbox/org-roam/research/images/20221202095659-hands_with_without_pen_classifier_data_split_csv.svg" alt="20221202095659-hands_with_without_pen_classifier_data_split_csv.svg" class="org-svg" />
+</p>
+<p><span class="figure-number">Figure 6: </span>Data split CSV file for writing</p>
+</div></li>
+
+<li><p>
+Run the following script to distribute images into proper directories
+as recommended by <code>mmclassification</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh"># From HAQ/hands-with-without-pen-classifier
+python split_data.py \
+       /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images \
+       /home/vj/Dropbox/writing-nowriting/trn-val-tst-splits.csv
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga10433b" class="outline-3">
+<h3 id="orga10433b"><span class="section-number-3">4.2.</span> Training configuration</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+The training configuration should be placed in mmclassification root
+directory, <code>~/mmclassification/configs/&lt;model&gt;/*_hand_class.py</code>. In
+case of vgg the full path is, <code>/home/vj/mmclassification/configs/vgg/vgg19bn_8xb32_hand_class.py</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org87ba400" class="outline-3">
+<h3 id="org87ba400"><span class="section-number-3">4.3.</span> Current status</h3>
+<div class="outline-text-3" id="text-4-3">
+<ul class="org-ul">
+<li>The model did not learn.</li>
+<li>The problem might be with the library rather than the data.</li>
+<li>I will <b>use Keras library</b>. The mmclassification library
+is
+<ul class="org-ul">
+<li>Unnecessarily complex</li>
+<li>The architectures seem to be hidden unless dug in.</li>
+</ul></li>
+</ul>
+
+
+<div id="orgf2ad0af" class="figure">
+<p><img src="./images/mmcls_stuck.png" alt="mmcls_stuck.png" />
+</p>
+<p><span class="figure-number">Figure 7: </span>mmclassification not learning</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org72e1bf3" class="outline-2">
+<h2 id="org72e1bf3"><span class="section-number-2">5.</span> Discussion / Feedback</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-orgde3d88e" class="outline-3">
+<h3 id="orgde3d88e"><span class="section-number-3">5.1.</span> Discussion</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li>Having more sessions in testing:
+This requires retraining SOT</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org82157ba" class="outline-3">
+<h3 id="org82157ba"><span class="section-number-3">5.2.</span> Feedback</h3>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2022-12-04 Sun 10:20</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

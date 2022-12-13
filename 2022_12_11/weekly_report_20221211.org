@@ -1,0 +1,121 @@
+#+HTML_HEAD: <link rel="stylesheet" href="https://latex.now.sh/style.css"> 
+* Feedback
+- Plot SOTA learning curves.
+- Make the validation learning curves (loss and accuracy) smoother.
+  1. Try the smoothing with default values used by tensorflow.
+  2. Decrease the initial learning rate for adam optimizer.
+  3. Create a datasplit to have more sessions in Testing and Validation. The
+     recommendation is 50 for training, 30 for validation and 20 for testing.
+* Action items
+** DONE Plot SOTA learning curves
+** TODO Smooth learning curves with the default tensorflow window based smoothing algorithm.
+** TODO Decrease initial learning rate of 10FPS model.
+** TODO Create a datasplit to distribute more sessions for validation and Testing.
+* SOTA learning curves
+- The learning curves are for writing/nowriting recognition.
+- The dataset is as below
+   |            | # Samples (writing, nowriting) | # Sessions |
+   |------------+--------------------------------+------------|
+   | Training   | (309, 579)                     |         28 |
+   | Validation | (124, 88)                      |          2 |
+** Using =mmaction2= library.
+- The plotting tool from the =mmaction2= library does not seem to support plotting of validation accuracy and loss.
+  - [[https://mmaction2.readthedocs.io/en/latest/useful_tools.html#log-analysis][Tool description link]]
+    #+begin_src python
+      # from  tools/analysis/analyze_logs.py line 59
+      for epoch in epochs:
+	  iters = log_dict[epoch]['iter']
+	  if log_dict[epoch]['mode'][-1] == 'val':
+	      iters = iters[:-1]
+	  xs.append(np.array(iters) + (epoch - 1) * num_iters_per_epoch)
+	  ys.append(np.array(log_dict[epoch][metric][:len(iters)]))
+    #+end_src
+- Hence I wrote my own code to support plotting of Training and Validation accuracy.
+- Also, by editing =workflow= parameter, =mmaction2= library claims to support calcuation
+  of validation loss.
+  - [[https://mmaction2.readthedocs.io/en/latest/tutorials/7_customize_runtime.html#customize-workflow][Workflow documetation]]
+    #+begin_src python
+      [('train', 1), ('val', 1)]
+    #+end_src
+  - From my understanding I need to rerun the training to get validation loss.
+    May be there is a way to calculate it from saved checkpoints as described at
+    [[https://mmaction2.readthedocs.io/en/latest/useful_tools.html#evaluating-a-metric][evaluating a metric]].
+** Using my library
+*** Producing the maps using plotly
+#+begin_src sh
+    # From HAQ/sota/2022-mmaction2/plotting/
+    plot_learning_curves.py \
+	/mnt/twelvetb/vj/mmaction2_2022/workdir/wnw_table_roi/resized_224/slowfast/run1_Sep09_2022/20220909_194741.log.json
+#+end_src
+*** Slowfast accuracy per epoch
+- Link: [[file:plotly_plots/run1_Sep09_2022_slowfast_accuracy.html][Click here to view the plot]]
+  [[./images/run1_Sep09_2022_slowfast_accuracy.png]]
+*** I3D accuracy per epoch
+- Link: [[file:plotly_plots/run1_Sep09_2022_i3d_accuracy.html][Click here to view the plot]]
+  [[./images/run1_Sep09_2022_i3d_accuracy.png]]
+*** TSN accuracy per epoch
+- Link: [[file:plotly_plots/run1_Sep09_2022_tsn_accuracy.html][Click here to view the plot]]
+  [[./images/run1_Sep09_2022_tsn_accuracy.png]]
+*** TSM accuracy per epoch
+- Link: [[file:plotly_plots/run1_Sep09_2022_tsm_accuracy.html][Click here to view the plot]]
+  [[./images/run1_Sep09_2022_tsm_accuracy.png]]
+* Keras based image classifier (transfer learning)
+** Installation in =P7920=
+*** +Tensorflow2 using conda+ (Not working with GPU)
+#+begin_src sh
+  conda create --name tf-gpu tensorflow-gpu
+#+end_src
+*** +Testing the installation+ (NOT WORKING WITH GPU)
+After installing I ran the following code to test proper loading of
+GPU libraries, [[https://keras.io/examples/vision/mnist_convnet/][Simple MNIST convnet]]. The libraries loaded correctly and there are no errors.
+*** Docker
+0. Doc links
+   - [[https://www.tensorflow.org/install/docker][Tensorflow Docker documentation]]
+   - [[https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker][Installing nvidia-docker]]
+1. Install docker
+   Docker is already installed and the version is =Docker version 20.10.21, build baeda1f=.
+2. Install nvidia docker
+   #+begin_src sh
+     distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+      && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+	    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+	    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+     sudo apt update
+     sudo apt-get install -y nvidia-docker2
+     sudo systemctl restart docker
+   #+end_src
+3. Test by running a base CUDA container
+   #+begin_src sh
+     sudo docker run --rm --gpus all nvidia/cuda:11.6.2-base-ubuntu20.04 nvidia-smi
+   #+end_src
+4. Pull tensorflow docker image
+   #+begin_src sh
+     sudo docker pull tensorflow/tensorflow:latest-gpu-jupyter
+   #+end_src
+5. Creating user in the container
+   Start docker container using interactive terminal flag,=-it=, and
+   create a user called =vj= and add =twotb= and =twelvetb= directories to his home. Once done
+   commit using the command below.
+   #+begin_src sh
+     sudo docker commit -m "Added user vj" 83f5ff615620 tensorflow_datasets/tensorflow:latest-gpu-vj
+   #+end_src
+6. Mount proper directories and start contianer.
+   #+begin_src sh
+     sudo docker run -u $(id -u):$(id -g) -it --gpus all --shm-size=64g -v /mnt/twotb:/home/vj/twotb -v /mnt/twelvetb/vj:/home/vj/twelvetb tensorflow/tensorflow:latest-gpu-vj
+   #+end_src
+   
+** Transfer learning
+- Documentation links
+  - [[https://keras.io/guides/transfer_learning/][Keras Transfer learning & fine-tuning tutorial]]: Keras tutorail about transfer learning
+    and fine tuning.
+  - [[https://keras.io/api/applications/][Keras Applications]]: Deep learning models made available by keras library along with
+    pretrained weights.
+  - [[https://www.tensorflow.org/api_docs/python/tf/keras/utils/image_dataset_from_directory][Image dataset from directory]]: How to load our own dataset from directory.
+  - [[https://github.com/Nithyashree-2022/VGG-19-for-Rock-Paper-and-Scissors-classification][Rock, paper, and scissor recognition using VGG-19]]: A good tutorial using tensorflow
+    transfer learning and dataset having hand signs.
+  
+
+  
+

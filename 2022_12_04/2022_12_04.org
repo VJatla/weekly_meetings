@@ -1,0 +1,165 @@
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+* Previous week feedback
+** DONE Data augmentation
+** DONE Classifer at different temporal sampling rate
+** ACTIVE Hand with pen Vs Hand without pen
+* Data augmentation
+** Augmentation parameters
+- The augmentation parameters are *recaled* from Sravani thesis.
+- With 0.5 probability data is augmented with
+  1. Rotation, {-7,...,+7}
+  2. Width Translation {-5,...+5}
+  3. Flip with a probability of 0.5
+  4. Rescaling the frame between [0.8 to 1.2]
+  5. Shearing with x axis witht a factor of [-0.05, 0.05] <--- I eyed this not from sravani thesis
+** Dataset
+- Writing/nowriting classification
+- Each sample is,
+  - 90 frames
+  - The longer edge scaled to 224 while mainitaining aspect ratio.
+- Dataset
+
+ |            | # Samples (writing, nowriting) | # Sessions |
+ |------------+--------------------------------+------------|
+ | Training   | (309, 579)                     |         28 |
+ | Validation | (124, 88)                      |          2 |
+
+** Results
+
+- *NOTE:* I have yet to see how the augmented model performs on the test.
+  
+ |          | Best epoch | Trn Loss | Val Loss | Trn Acc | Val Acc |
+ |----------+------------+----------+----------+---------+---------|
+ | No aug   |         22 |     0.29 |     0.66 |      88 |      69 |
+ | With aug |         52 |     0.28 |     0.67 |      87 |      69 |
+
+** Learning curves
+*** Loss
+- [[./plotly_graphs/Nov10_run5_no_aug_accuracy.html][Click here]] to see loss curve without augmentation.
+- [[./plotly_graphs/Dec01_run3_aug_loss.html][Click here]]to see loss curve with augmentation.
+#+CAPTION: Loss curve for with and without augmentation
+#+NAME:   fig:acc_aug_noaug_curve
+[[./images/2022_12_04-aug_vs_noaug_loss.drawio.svg]]
+
+*** Accuracy
+- [[./plotly_graphs/Nov10_run5_no_aug_accuracy.html][Click here]] to see accuracy curve without augmentation.
+- [[./plotly_graphs/Dec01_run3_aug_loss.html][Click here]]to see accuracy curve with augmentation.
+#+CAPTION: Accuracy curve for with and without augmentation
+#+NAME:   fig:acc_aug_noaug_curve
+[[./images/2022_12_04-aug_vs_noaug_loss.drawio.svg]]
+
+
+
+* Classifers at different temporal sampling rate
+** Dataset
+- Writing/nowriting classification
+- Each sample is,
+  - A sample can have 30, 60 or 90 frames based on the sampling.
+  - The longer edge scaled to 224 while mainitaining aspect ratio.
+- Dataset
+
+ |            | # Samples (writing, nowriting) | # Sessions |
+ |------------+--------------------------------+------------|
+ | Training   | (309, 579)                     |         28 |
+ | Validation | (124, 88)                      |          2 |
+** Design
+The first layer max pooling is adjusted as per FPS. The rest of the
+architecture will remain the same.
+
+#+CAPTION: Adjusting the first layer MaxPooling
+#+NAME:   fig:AdjMaxPool
+[[~/Dropbox/org-roam/research/images/20221130090739-multi_fps_3dcnns.drawio.svg]]
+** Results
+
+- *NOTE:* I have yet to see how the augmented model performs on the test.
+  
+ | Temporal sampling | Best epoch | Trn Loss | Val Loss | Trn Acc | Val Acc |
+ |-------------------+------------+----------+----------+---------+---------|
+ | 30 frames per sec |         52 |     0.28 |     0.67 |      87 |      69 |
+ |                20 |         54 |     0.27 |     0.62 |      89 |      73 |
+ |                10 |         59 |     0.27 |     0.57 |      88 |      77 |
+
+** Learning curves
+*** Loss
+- [[./plotly_graphs/Dec01_run3_aug_loss.html][30 frames sampled per second]]
+- [[./plotly_graphs/Dec01_run2_aug_loss_20fps.html][20 frames sampled per second]]
+- [[./plotly_graphs/Dec01_run3_aug_accuracy_10fps.html][10 frames sampled per second]]
+
+#+CAPTION: Loss curve at different temporal sampling
+#+NAME:   fig:AdjMaxPool
+[[./images/2022_12_04-temporal_sampling_loss.drawio.svg]]
+
+
+* =hand-with-pen= Vs =hand-without-pen=
+** Data preparation
+*** Extracting images from video samples
+I first extract images from video samples by running the following
+script
+#+begin_src sh
+  # From HAQ/hands-with-without-pen-classifier
+  python extract_frames.py \
+    /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images/writing_30fps \
+    /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images/nowriting_30fps \
+    /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images
+#+end_src
+*** Cleaning data
+After extracting the frames as images we might have some improper instances,
+- Image from writing
+  - Without hands
+  - Without pen
+- Images from nowriting
+  - Without hands
+  - With hands and pen
+This requires manual cleaning* by going through each image.
+#+CAPTION: Images extracted from writing and nowriting video samples that will mislead classifier.
+#+NAME:   fig:writing_data_split_csv
+[[~/Dropbox/org-roam/research/images/20221202095659-hands_with_without_pen_classifier-not_correct_instances.drawio.svg]]
+
+*** Splitting data into training, validation and testing
+To split the data into training, validation and testing we first
+need the following files and directories,
+- Directory having images of hands-with-pen and hands-withot-pen.
+- A csv file having session name and corresponding data split.
+  Here we are assuming that the image files have information about session.
+  For example, =tv_224_793_G-C3L1W-Mar19-D-Phuong_q2_03-04_30fps_Kid77_4381_4471_44.0.png= has
+  session information coded into, /C3L1W-Mar10-D/.
+    
+  #+CAPTION: Data split CSV file for writing
+  #+NAME:   fig:writing_data_split_csv
+  [[~/Dropbox/org-roam/research/images/20221202095659-hands_with_without_pen_classifier_data_split_csv.svg]]
+
+- Run the following script to distribute images into proper directories
+  as recommended by =mmclassification=.
+
+  #+begin_src sh
+    # From HAQ/hands-with-without-pen-classifier
+    python split_data.py \
+           /home/vj/twotb/aolme_datasets/wnw_table_roi/hands_with_withot_pen_images \
+           /home/vj/Dropbox/writing-nowriting/trn-val-tst-splits.csv
+  #+end_src
+
+** Training configuration
+The training configuration should be placed in mmclassification root
+directory, =~/mmclassification/configs/<model>/*_hand_class.py=. In
+case of vgg the full path is, =/home/vj/mmclassification/configs/vgg/vgg19bn_8xb32_hand_class.py=.
+
+** Current status
+- The model did not learn.
+- The problem might be with the library rather than the data.
+- I will *use Keras library*. The mmclassification library
+  is
+  - Unnecessarily complex
+  - The architectures seem to be hidden unless dug in.
+    
+#+CAPTION: mmclassification not learning
+#+NAME:   fig:AdjMaxPool
+[[./images/mmcls_stuck.png]]
+
+* Feedback
+- Plot SOTA learning curves.
+- Make the validation learning curves (loss and accuracy) smoother.
+  1. Try the smoothing with default values used by tensorflow.
+  2. Decrease the initial learning rate for adam optimizer.
+  3. Create a datasplit to have more sessions in Testing and Validation. The
+     recommendation is 50 for training, 30 for validation and 20 for testing.
+ 

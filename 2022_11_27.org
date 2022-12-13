@@ -1,0 +1,28 @@
+* Initial feedback
+** Split the dataset.
+The writing and typing datasets should have four testing sessions.
+** Reinstall SOTA
+Use Optical Flow methods in SOTA
+** Optical flow and Projections
+Use these ideas in your own method.
+** Multiple FPS classifiers
+Train multiple frame rate classifiers and pick the best
+** Ensembles
+Use the ensembles if we are still performing bad
+** Video properties
+Train a video based algorithm to filter false positives and false negatives.
+* Change by afternoon
+** Data augmentation
+Use data augmentation to generalize our framework.
+* Change by evening
+** Data augmentation
+This is primary priority.
+** Simple, fast, /hand/ and /hand with pen/ classifier.
+Create a classifier that can reduce false positives by classifying hands
+with pen from hand without pen.
+* Action items
+** TODO Data augmentation
+** TODO Multiple FPS classifer
+A more elegent solution for multiple FPS classifiers. After several dyads when
+depth is not multiple of 3 use 2D-CNNs and 2D Maxpooling layers.
+** TODO Hand with pen Vs Hand without pen
