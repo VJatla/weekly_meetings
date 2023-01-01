@@ -1,0 +1,190 @@
+#+HTML_HEAD: <link rel="stylesheet" href="https://latex.now.sh/style.css">
+#+TITLE: New data split
+* Aim
+1. The validation curve using two complete sessions in validation data has
+  resulted in non-smooth curve that does not show decrease in
+  loss.
+2. More sessions are required in the testing.
+  
+* Guiding principles
+- There should be atleast 4 sessions in the testing.
+- The validation and training can share sessions from same
+  group.
+  
+* Writing/nowriting new data set
+** Sessions having complete ground truth
+- The following sessions have complete writing ground truth.
+- The information is taken from the proposal.
+
+| Group   | Date   |
+|---------+--------|
+| C1L1P-B | Mar 02 |
+| C1L1P-C | Mar 30 |
+| C1L1P-C | Apr 13 |
+| C1L1P-D | Apr 13 |
+| C1L1P-E | Mar 02 |
+| C2L1P-B | Feb 23 |
+| C2L1P-C | Apr 12 |
+| C2L1P-D | Mar 08 |
+| C2L1P-E | Apr 12 |
+| C3L1P-C | Apr 11 |
+| C3L1P-D | Feb 21 |
+| C3L1W-D | Mar 19 |
+
+** Testing sessions in hand detection
+
+| Group   | Date   | fully labeled? |
+|---------+--------+----------------|
+| C1L1P-C | Mar 30 | Yes            |
+| C1L1P-C | Apr 13 | Yes            |
+| C1L1P-E | Mar 02 | Yes            |
+| C2L1P-B | Feb 23 | Yes            |
+| C2L1P-D | Mar 08 | Yes            |
+| C3L1P-C | Apr 11 | Yes            |
+| C3L1P-D | Mar 19 | Yes            |
+
+** Original data split
+Originally we organized the data splits so that the validation
+and testing will have sessions that are fully labeled. This is
+available in the file =trn-val-tst-splits-two-val-sess.csv=. The table
+below summarizes them,
+
+| Split label | Sessions                       |
+|-------------+--------------------------------|
+| Validation  | C2L1P-C Apr 12, C2L1P-E Apr12  |
+| Testing     | C1L1P-C Apr 13, C3L1P-C Apr 11 |
+| Training    | /The rest of them/             |
+
+** New data split
+*** Testing
+| Group   |     Date | Date  | Data split label | fully  labeled? |
+|---------+----------+-------+------------------+-----------------|
+| C1L1P-C | 20170330 | Mar30 | tst              | yes             |
+| C1L1P-E | 20170302 | Mar02 | tst              | yes             |
+| C2L1P-B | 20180223 | Feb23 | tst              | yes             |
+| C3L1P-C | 20190411 | Apr11 | tst              | yes             |
+
+*** Validation
+| Group   |     Date | Date  | Data split label | Fully labeled? |
+|---------+----------+-------+------------------+----------------|
+| C1L1P-C | 20170225 | Feb25 | val              | no             |
+| C1L1P-C | 20170309 | Mar09 | val              | no             |
+| C1L1P-C | 20170406 | Apr06 | val              | no             |
+| C1L1P-D | 20170302 | Mar02 | val              | no             |
+| C1L1P-D | 20170330 | Mar30 | val              | no             |
+| C1L1W-A | 20170221 | Feb21 | val              | no             |
+
+*** Training
+The rest of the sessions are used for training.
+
+*** Using all writing & nowriting instances
+- Taking one three second instance from the middle of every activity
+  instance.
+
+|                     | Training | Validation | Testing |
+|---------------------+----------+------------+---------|
+| # writing samples   |      407 |        141 |     250 |
+| # nowriting samples |      191 |         67 |     376 |
+
+*** Using balanced dataset
+- Taking one three second instance from the middle of every activity
+  instance.
+- Randomly sampling to have balanced dataset
+
+|                     | Training | Validation | Testing |
+|---------------------+----------+------------+---------|
+| # writing samples   |      180 |         50 |     250 |
+| # nowriting samples |      180 |         50 |     250 |
+
+** Results
+
+*** Using all typing & notyping instances
+| Method         | Acc. Trn. | Acc. Val. | Loss Trn. | Loss Val. | AUC Val. | AUC Tst. |
+|----------------+-----------+-----------+-----------+-----------+----------+----------|
+| 3D-CNN, 30 FPS |     88.30 | *91.83*   |    *0.28* | 0.27      |   0.9519 |   0.7396 |
+| 3D-CNN, 20 FPS |   *89.03* | *91.83*   |      0.29 | 0.26      |   0.9362 |   0.7347 |
+| 3D-CNN, 10 FPS |     86.69 | 89.79     |      0.33 | *0.25*    | *0.9563* | *0.7564* |
+| I3D, 30 FPS    |     72.50 | 87.75     |      0.50 | ---       |          |          |
+
+*** Using all writing & nowriting instances
+
+| Method         | Acc. Trn. | Acc. Val. | Loss Trn. | Loss Val. | AUC Val. | AUC Tst. |
+|----------------+-----------+-----------+-----------+-----------+----------+----------|
+| 3D-CNN, 30 FPS |   *87.62* |   *81.73* |      0.31 | 0.49      |   0.8190 |      0.7 |
+| 3D-CNN, 20 FPS |     87.27 |     73.11 |      0.31 | 0.61      |   0.6932 |   0.5816 |
+| 3D-CNN, 10 FPS |     86.78 |     77.88 |    *0.28* | *0.45*    | *0.8472* |   0.6737 |
+| I3D, 30 FPS    |      77.5 |     77.40 |      0.48 | ---       |          |          |
+
+* Typing/notyping new data set
+** Sessions having complete tying,notyping ground truth
+- The following sessions have complete typing ground truth.
+- The information is taken from the proposal.
+
+| Group   | Date                   |
+|---------+------------------------|
+| C1L1P-C | Mar 30, Apr 13, May 04 |
+| C1L1P-E | Mar 02                 |
+| C2L1P-B | Feb 23                 |
+| C2L1P-D | Mar 08                 |
+| C2L1W-A | Apr 10                 |
+| C2L1W-B | Feb 27                 |
+| C3L1P-C | Apr 11                 |
+| C3L1P-D | Feb 21                 |
+| C3L1W-A | Mar 19                 |
+
+** Testing sessions in keybaord detection
+
+| Group   | Date   | fully labeled? |
+|---------+--------+----------------|
+| C1L1P-C | Mar 30 | Yes            |
+| C1L1P-C | Apr 13 | Yes            |
+| C1L1P-E | Mar 02 | Yes            |
+| C2L1P-B | Feb 23 | Yes            |
+| C2L1P-D | Mar 08 | Yes            |
+| C3L1P-C | Apr 11 | Yes            |
+| C3L1P-D | Mar 19 | Yes            |
+
+** Original data split
+- The file name is =trn-val-tst-splits-backup-20221214.csv=.
+
+| Group   | Date   | data split label |
+|---------+--------+------------------|
+| C1L1P-E | Mar 02 | validation       |
+| C2L1P-D | Mar 08 | validation       |
+| C2L1P-B | Feb 23 | testing          |
+| C3L1P-D | Feb 21 | testing          |
+
+** New data split
+*** Testing
+
+| Group   |     Date | Date   | Data split label | fully  labeled? |
+|---------+----------+--------+------------------+-----------------|
+| C2L1P-B | 20180223 | Feb 23 | tst              | yes             |
+| C3L1P-D | 20190221 | Feb 21 | tst              | yes             |
+| C1L1P-C | 20170330 | Mar 30 | tst              | yes             |
+| C1L1P-E | 20170302 | Mar02  | tst              | yes             |
+
+*** Validation
+
+| Group   |     Date | Date  | Data split label | Fully labeled? |
+|---------+----------+-------+------------------+----------------|
+| C1L1P-A | 20170309 | Mar09 | val              | no             |
+| C1L1P-A | 20170420 | Apr20 | val              | no             |
+| C1L1P-B | 20170406 | Apr06 | val              | no             |
+| C1L1P-C | 20170225 | Feb25 | val              | no             |
+| C1L1P-C | 20170309 | Mar09 | val              | no             |
+| C1L1P-C | 20170420 | Apr20 | val              | no             |
+| C1L1P-D | 20170309 | Mar09 | val              | no             |
+| C1L1W-A | 20170221 | Feb21 | val              | no             |
+| C1L1W-B | 20170506 | May06 | val              | no             |
+
+*** Training
+Rest of the samples are for training.
+*** Using all typing & notyping instances
+- Taking one three second instance from the middle of every activity
+  instance.
+  
+|                    | Training | Validation | Testing |
+|--------------------+----------+------------+---------|
+| # typing samples   |      364 |         68 |     128 |
+| # notyping samples |      320 |         30 |     112 |

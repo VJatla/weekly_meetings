@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-12-13 Tue 05:51 -->
+<!-- 2022-12-14 Wed 10:36 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -200,23 +200,24 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org35df47e">1. Feedback</a></li>
-<li><a href="#org5ae272c">2. Action items</a></li>
-<li><a href="#org91e480a">3. Hand with pen / Hand without pen classifier</a>
+<li><a href="#orgde347b0">1. Feedback</a></li>
+<li><a href="#org352efc2">2. Action items</a></li>
+<li><a href="#org6ab286b">3. Reshuffling dataset</a>
 <ul>
-<li><a href="#org1294af7">3.1. Dataset</a>
-<ul>
-<li><a href="#org91dff4d">3.1.1. Links</a></li>
-<li><a href="#orgafe2e14">3.1.2. Preparation</a></li>
+<li><a href="#org01b4ac0">3.1. Writing</a></li>
 </ul>
 </li>
+<li><a href="#orge252a11">4. Hand with pen / Hand without pen classifier</a>
+<ul>
+<li><a href="#org552fc43">4.1. Links</a></li>
+<li><a href="#org3d79e49">4.2. Dataset</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org35df47e" class="outline-2">
-<h2 id="org35df47e"><span class="section-number-2">1.</span> Feedback</h2>
+<div id="outline-container-orgde347b0" class="outline-2">
+<h2 id="orgde347b0"><span class="section-number-2">1.</span> Feedback</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li></li>
@@ -231,46 +232,399 @@ recommendation is 50 for training, 30 for validation and 20 for testing.</li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org5ae272c" class="outline-2">
-<h2 id="org5ae272c"><span class="section-number-2">2.</span> Action items</h2>
+<div id="outline-container-org352efc2" class="outline-2">
+<h2 id="org352efc2"><span class="section-number-2">2.</span> Action items</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
-<li><b>Plot SOTA learning curves</b></li>
-<li><b>Smooth learning curves</b></li>
-<li><b>Decrease initial learning rate of 10FPS model</b></li>
-<li><b>Reshuffle data to have more sessions in testing and validation</b></li>
-<li><b>hand with pen / hand wihtout pen classifier</b> <code>[1/1]</code>
+<li>Smooth learning curves</li>
+<li>Decrease initial learning rate of 10FPS model</li>
+<li>Reshuffle data to have more sessions in testing and validation <code>[0/2]</code>
 <ul class="org-ul">
-<li class="on"><code>[X]</code> Keras: How to load dataset from directories?</li>
+<li class="off"><code>[&#xa0;]</code> Summarize activity ground truth per</li>
+</ul></li>
+<li>hand with pen / hand wihtout pen classifier <code>[2/2]</code>
+<ul class="org-ul">
+<li class="on"><code>[X]</code> <b>Keras:</b> How to load dataset from directories?</li>
+<li class="on"><code>[X]</code> <b>Dataset:</b> Delete videos without hands in nowriting ground truth.</li>
 </ul></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org91e480a" class="outline-2">
-<h2 id="org91e480a"><span class="section-number-2">3.</span> Hand with pen / Hand without pen classifier</h2>
+<div id="outline-container-org6ab286b" class="outline-2">
+<h2 id="org6ab286b"><span class="section-number-2">3.</span> Reshuffling dataset</h2>
 <div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li><b>Why?</b>
+<ul class="org-ul">
+<li>To have more sessions in Testing data.</li>
+<li>To have smoother validation curve by having more sessions from same group
+in training and testing data.</li>
+</ul></li>
+</ul>
 </div>
-<div id="outline-container-org1294af7" class="outline-3">
-<h3 id="org1294af7"><span class="section-number-3">3.1.</span> Dataset</h3>
+<div id="outline-container-org01b4ac0" class="outline-3">
+<h3 id="org01b4ac0"><span class="section-number-3">3.1.</span> Writing</h3>
 <div class="outline-text-3" id="text-3-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">group</th>
+<th scope="col" class="org-right">date</th>
+<th scope="col" class="org-right"># writing</th>
+<th scope="col" class="org-right"># no writing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">C1L1W-A</td>
+<td class="org-right">20170307</td>
+<td class="org-right">5</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1W-A</td>
+<td class="org-right">20170425</td>
+<td class="org-right">9</td>
+<td class="org-right">6</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1W-A</td>
+<td class="org-right">20170228</td>
+<td class="org-right">11</td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1W-A</td>
+<td class="org-right">20170221</td>
+<td class="org-right">2</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1W-A</td>
+<td class="org-right">20170328</td>
+<td class="org-right">3</td>
+<td class="org-right">7</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-A</td>
+<td class="org-right">20170309</td>
+<td class="org-right">3</td>
+<td class="org-right">6</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-A</td>
+<td class="org-right">20170420</td>
+<td class="org-right">8</td>
+<td class="org-right">8</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-A</td>
+<td class="org-right">20170406</td>
+<td class="org-right">2</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-A</td>
+<td class="org-right">20170413</td>
+<td class="org-right">5</td>
+<td class="org-right">9</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-A</td>
+<td class="org-right">20170225</td>
+<td class="org-right">6</td>
+<td class="org-right">10</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-A</td>
+<td class="org-right">20170302</td>
+<td class="org-right">3</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-A</td>
+<td class="org-right">20170216</td>
+<td class="org-right">6</td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1W-D</td>
+<td class="org-right">20170228</td>
+<td class="org-right">4</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-E</td>
+<td class="org-right">20170225</td>
+<td class="org-right">6</td>
+<td class="org-right">4</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-E</td>
+<td class="org-right">20170302</td>
+<td class="org-right">45</td>
+<td class="org-right">46</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-D</td>
+<td class="org-right">20170309</td>
+<td class="org-right">1</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-D</td>
+<td class="org-right">20170406</td>
+<td class="org-right">6</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170309</td>
+<td class="org-right">8</td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170506</td>
+<td class="org-right">7</td>
+<td class="org-right">5</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170406</td>
+<td class="org-right">0</td>
+<td class="org-right">4</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170511</td>
+<td class="org-right">10</td>
+<td class="org-right">8</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170504</td>
+<td class="org-right">9</td>
+<td class="org-right">5</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170427</td>
+<td class="org-right">16</td>
+<td class="org-right">10</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170302</td>
+<td class="org-right">5</td>
+<td class="org-right">3</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-B</td>
+<td class="org-right">20170330</td>
+<td class="org-right">0</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C2L1W-B</td>
+<td class="org-right">20180227</td>
+<td class="org-right">75</td>
+<td class="org-right">80</td>
+</tr>
+
+<tr>
+<td class="org-left">C3L1W-D</td>
+<td class="org-right">20190319</td>
+<td class="org-right">49</td>
+<td class="org-right">72</td>
+</tr>
+
+<tr>
+<td class="org-left">C2L1P-B</td>
+<td class="org-right">20180223</td>
+<td class="org-right">56</td>
+<td class="org-right">67</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170309</td>
+<td class="org-right">2</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170420</td>
+<td class="org-right">6</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170413</td>
+<td class="org-right">18</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170225</td>
+<td class="org-right">41</td>
+<td class="org-right">23</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170504</td>
+<td class="org-right">45</td>
+<td class="org-right">48</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170302</td>
+<td class="org-right">8</td>
+<td class="org-right">5</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170330</td>
+<td class="org-right">5</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1P-C</td>
+<td class="org-right">20170216</td>
+<td class="org-right">7</td>
+<td class="org-right">5</td>
+</tr>
+
+<tr>
+<td class="org-left">C2L1P-D</td>
+<td class="org-right">20180308</td>
+<td class="org-right">58</td>
+<td class="org-right">52</td>
+</tr>
+
+<tr>
+<td class="org-left">C2L1P-C</td>
+<td class="org-right">20180412</td>
+<td class="org-right">2</td>
+<td class="org-right">5</td>
+</tr>
+
+<tr>
+<td class="org-left">C2L1W-A</td>
+<td class="org-right">20180410</td>
+<td class="org-right">6</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">C3L1P-C</td>
+<td class="org-right">20190411</td>
+<td class="org-right">13</td>
+<td class="org-right">43</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1W-C</td>
+<td class="org-right">20170221</td>
+<td class="org-right">3</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C1L1W-B</td>
+<td class="org-right">20170506</td>
+<td class="org-right">9</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">C3L1P-D</td>
+<td class="org-right">20190221</td>
+<td class="org-right">44</td>
+<td class="org-right">89</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="outline-container-org91dff4d" class="outline-4">
-<h4 id="org91dff4d"><span class="section-number-4">3.1.1.</span> Links</h4>
-<div class="outline-text-4" id="text-3-1-1">
+</div>
+</div>
+
+
+<div id="outline-container-orge252a11" class="outline-2">
+<h2 id="orge252a11"><span class="section-number-2">4.</span> Hand with pen / Hand without pen classifier</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org552fc43" class="outline-3">
+<h3 id="org552fc43"><span class="section-number-3">4.1.</span> Links</h3>
+<div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><a href="https://keras.io/api/data_loading/">Keras: Loading dataset from directories</a></li>
+<li><a href="https://keras.io/guides/transfer_learning/">Keras: Transfer learning &amp; fine-tuning tutorial</a>.</li>
+<li><a href="https://keras.io/api/applications/">Keras: List of deep learning models with weights.</a></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgafe2e14" class="outline-4">
-<h4 id="orgafe2e14"><span class="section-number-4">3.1.2.</span> Preparation</h4>
+<div id="outline-container-org3d79e49" class="outline-3">
+<h3 id="org3d79e49"><span class="section-number-3">4.2.</span> Dataset</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li>Hands with pen are extracted fron <i>writing</i> video samples.</li>
+<li>Hands without pen are extracted fron <i>nowriting</i> samples.
+<ul class="org-ul">
+<li>Video samples that do not have hands are excluded.</li>
+</ul></li>
+<li>Per sample, which is 90 frames, we extract 30 frames. That is one frame for every 3 frames.</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2022-12-13 Tue 05:51</p>
+<p class="date">Created: 2022-12-14 Wed 10:36</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

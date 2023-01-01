@@ -1,0 +1,24 @@
+* 3D-CNN classifier training
+** TODO Summarize results of typing/notyping classifier for new data split
+** TODO Summarize results of writing/nowriting classifier for new data split
+** DONE Train typing/notyping classifier for new data split.
+** DONE Train writing/nowriting classifier for new data split.
+* SOTA
+** TODO Test (trimmed samples) I3D typing/notyping classifier on testing set.
+** TODO Test (trimmed samples) I3D writing/nowriting classifier on testing set.
+** DONE Train I3D typing/notyping classifier for new data split
+** DONE Train I3D writing/nowriting classifier for new data split
+* Dataset
+** DONE New data split for typing/notyping.
+* Fine tuning
+** DONE Are we getting more stable curves with SGD?t
+SGD performed worse than ADAM.
+* Dissertation
+** Introduction [0/0]
+** Background [0/2]
+*** TODO Alvaro thesis
+*** TODO Sravani thesis
+** Dataset [0/0]
+** Methodology [0/0]
+** Results[0/0]
+** Conclusion [0/0]

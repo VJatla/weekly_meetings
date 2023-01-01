@@ -7,20 +7,26 @@
   3. Create a datasplit to have more sessions in Testing and Validation. The
      recommendation is 50 for training, 30 for validation and 20 for testing.
 * Action items
-- *Plot SOTA learning curves*
-- *Smooth learning curves*
-- *Decrease initial learning rate of 10FPS model*
-- *Reshuffle data to have more sessions in testing and validation*
-- *hand with pen / hand wihtout pen classifier* [1/1]
-  - [X] Keras: How to load dataset from directories?
+- Smooth learning curves
+- Decrease initial learning rate of 10FPS model
+- Reshuffle data to have more sessions in testing and validation [0/2]
+  - [ ] Summarize activity ground truth per 
+- hand with pen / hand wihtout pen classifier [2/2]
+  - [X] *Keras:* How to load dataset from directories?
+  - [X] *Dataset:* Delete videos without hands in nowriting ground truth.
 
+* Reshuffling dataset
+- *Why?*
+  - To have more sessions in Testing data.
+  - To have smoother validation curve by having more sessions from same group
+    in training and testing data.
 * Hand with pen / Hand without pen classifier
 ** Links
 - [[https://keras.io/api/data_loading/][Keras: Loading dataset from directories]]
 - [[https://keras.io/guides/transfer_learning/][Keras: Transfer learning & fine-tuning tutorial]].
 - [[https://keras.io/api/applications/][Keras: List of deep learning models with weights.]]
 ** Dataset
-- Data set is prepared from =writing / nowriting= ground truth.
-- 
-
-1
+- Hands with pen are extracted fron /writing/ video samples.
+- Hands without pen are extracted fron /nowriting/ samples.
+  -  Video samples that do not have hands are excluded.
+- Per sample, which is 90 frames, we extract 30 frames. That is one frame for every 3 frames. 
