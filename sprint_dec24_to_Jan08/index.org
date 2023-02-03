@@ -1,7 +1,0 @@
-#+HTML_HEAD: <link rel="stylesheet" href="https://latex.now.sh/style.css"> 
-* Tasks
-Tasks are in [[./tasks.org]].
-* Dataset split
-** New Dataset split information
-  [[./wnw_new_data_split.org]]
-* 
